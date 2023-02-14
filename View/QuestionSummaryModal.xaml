@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:QuizMe.ViewModel"
+             xmlns:wrapper="clr-namespace:QuizMe.Model.Wrapper"
+             x:Class="QuizMe.View.QuestionSummaryModal"
+             x:DataType="viewmodel:QuestionSummaryVM"
+             Shell.PresentationMode="Modal"
+             Title="QuestionSummaryModal">
+    <VerticalStackLayout Spacing="10" Padding="100">
+        <Label Text="{Binding Question.Title}"/>
+        <CollectionView ItemsSource="{Binding Question.Answers}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="wrapper:TestAnswerWrapper">
+                    <Grid ColumnDefinitions="*,*,Auto">
+                        <Label Grid.Column="0" Text="{Binding Content}"/>
+                        <HorizontalStackLayout Grid.Column="1" Spacing="10">
+                            <Label Text="Correct answer:"/>
+                            <Label Text="True" IsVisible="{Binding IsCorrect}"/>
+                            <Label Text="False" IsVisible="{Binding IsIncorrect}"/>
+                        </HorizontalStackLayout>
+                        <Label Grid.Column="2" Text="✔" IsVisible="{Binding AnsweredCorrectly}"/>
+                        <Label Grid.Column="2" Text="❌" IsVisible="{Binding AnsweredIncorrectly}"/>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <Button HorizontalOptions="End" Text="OK" Command="{Binding BackCommand}"/>
+    </VerticalStackLayout>
+</ContentPage>

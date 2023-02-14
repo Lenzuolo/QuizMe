@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:QuizMe.ViewModel"
+             xmlns:wrapper="clr-namespace:QuizMe.Model.Wrapper"
+             x:Class="QuizMe.View.MainPanel"
+             x:DataType="viewmodel:MainPanelVM"
+             Title="{Binding Title}"
+             >
+    <VerticalStackLayout Padding="40" Spacing="20" WidthRequest="800">
+        <Label HorizontalOptions="Start" FontSize="20" Text="Welcome!"/>
+        <Border StrokeThickness="3"></Border>
+        <Grid ColumnDefinitions="100,*" ColumnSpacing="10" x:Name="toolbar">
+                <Label Grid.Column="0" VerticalOptions="Center" HorizontalOptions="Start" FontSize="16" Text="Your courses"/>
+                <Grid VerticalOptions="Center" Grid.Column="1" ColumnSpacing="10" ColumnDefinitions="*,*,*,*,*,*" HorizontalOptions="End">
+                    <Button Grid.Column="0" Text="Refresh List" Command="{Binding GetTestsCommand}" Clicked="ResetButtonVisualState"/>
+                    <Button Grid.Column="1" x:Uid="AddTest" Text="Add" Command="{Binding AddCourseCommand}" Clicked="ResetButtonVisualState"/>
+                    <Button Grid.Column="2" x:Uid="EditTest" Text="Edit" IsVisible="{Binding IsSelected}" Command="{Binding EditCourseCommand}" Clicked="ResetButtonVisualState"/>
+                    <Button Grid.Column="2" x:Uid="EditTest" Text="Edit"                        
+                        TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" 
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                        IsEnabled="{Binding IsSelected}" 
+                        IsVisible="{Binding IsNotSelected}" Command="{Binding EditCourseCommand}" Clicked="ResetButtonVisualState"/>
+                    <Button Grid.Column="3" x:Uid="RemoveTest" Text="Remove" IsVisible="{Binding IsSelected}" Command="{Binding RemoveTestCommand}" Clicked="ResetButtonVisualState"/>
+                    <Button Grid.Column="3" x:Uid="RemoveTest" Text="Remove"                         
+                        TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" 
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                        IsEnabled="{Binding IsSelected}" 
+                        IsVisible="{Binding IsNotSelected}" Command="{Binding RemoveTestCommand}" Clicked="ResetButtonVisualState"/>
+                    <Button Grid.Column="4" x:Uid="LearnTest" Text="Learn" BackgroundColor="LightGreen" IsVisible="{Binding IsSelected}" Command="{Binding LearnTestCommand}" Clicked="ResetButtonVisualState"/>
+                    <Button Grid.Column="4" x:Uid="LearnTest" Text="Learn"                         
+                        TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" 
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" 
+                        IsEnabled="{Binding IsSelected}" 
+                        IsVisible="{Binding IsNotSelected}" Command="{Binding LearnTestCommand}" Clicked="ResetButtonVisualState"/>
+                    <Button Grid.Column="5" x:Uid="TakeTest" Text="Take" BackgroundColor="LightGreen" IsVisible="{Binding IsSelected}" Command="{Binding TakeTestCommand}" Clicked="ResetButtonVisualState"/>
+                    <Button Grid.Column="5" x:Uid="TakeTest" Text="Take" 
+                        TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}"
+                        IsEnabled="{Binding IsSelected}"    
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" IsVisible="{Binding IsNotSelected}" 
+                        Command="{Binding TakeTestCommand}" Clicked="ResetButtonVisualState"/>
+                </Grid>
+            </Grid>
+        <Border StrokeThickness="3"/>
+        <Border Padding="20">
+            <RefreshView Command="{Binding GetTestsCommand}">
+                <CollectionView ItemsSource="{Binding Tests}" SelectionMode="Single" SelectedItem="{Binding SelectedItem}" HeightRequest="400">
+                    <CollectionView.EmptyView HorizontalOptions="Center" VerticalOptions="Center">
+                        <StackLayout Padding="150">
+                            <Label Text="Nothing to display here, click Add to add a new course" HorizontalOptions="Center" FontSize="20" TextColor="LightGray"/>
+                        </StackLayout>
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="wrapper:TestWrapper">
+                            <Frame Padding="10" Margin="5">
+                                <Frame.GestureRecognizers>
+                                    <ClickGestureRecognizer NumberOfClicksRequired="2" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainPanelVM}}, Path=EditCourseCommand}"/>
+                                </Frame.GestureRecognizers>
+                                <Grid ColumnDefinitions="*,*,*,*,*">
+                                    <Label Grid.Column="0" Text="{Binding Index}"/>
+                                    <Label Grid.Column="1" Text="{Binding Name}"/>
+                                    <HorizontalStackLayout Grid.Column="2" Spacing="10">
+                                        <Label Text="Questions: "/>
+                                        <Label Text="{Binding Questions}"/>
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout Grid.Column="3" Spacing="10">
+                                        <Label Text="Points: "/>
+                                        <Label Text="{Binding Points}"/>
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout Grid.Column="4" Spacing="10">
+                                        <Label Text="Best score: "/>
+                                        <Label Text="{Binding BestScore}"/>
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </RefreshView>
+        </Border>
+    </VerticalStackLayout>
+</ContentPage>

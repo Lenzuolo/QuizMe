@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:QuizMe.ViewModel"
+             xmlns:model="clr-namespace:QuizMe.Model"
+             x:DataType="viewmodel:CreateTestVM"
+             x:Class="QuizMe.View.CreateTestPanel"
+             Title="{Binding Title}"
+             >
+    <VerticalStackLayout Padding="60,10" Spacing="20" WidthRequest="800">
+        <Grid WidthRequest="700" ColumnDefinitions="Auto,*" Padding="10" ColumnSpacing="10" RowDefinitions="*,*,*" x:Name="Form">
+            <Label Grid.Row="0" Grid.Column="0" VerticalOptions="Center" Text="Name:"/>
+            <Entry Grid.Row="0" Grid.Column="1" VerticalOptions="Center" BackgroundColor="{StaticResource Yellow300Accent}" Placeholder="Name" Text="{Binding Name}"/>
+            <Label Grid.Row="1" Grid.Column="0" VerticalOptions="Center" Text="Type:"/>
+            <HorizontalStackLayout RadioButtonGroup.GroupName="Type"
+                                   RadioButtonGroup.SelectedValue="{Binding Type}"
+                                   Grid.Row="1" 
+                                   Spacing="0" 
+                                   Grid.Column="1" 
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="Start"
+                                   WidthRequest="200">
+                <RadioButton Content="Quiz" Value="Q" HorizontalOptions="Start"/>
+                <RadioButton Content="Card" Value="C" IsEnabled="False" HorizontalOptions="Start"/>
+            </HorizontalStackLayout>
+            <Label Grid.Row="2" Margin="0" Grid.Column="0" VerticalOptions="Center" Text="Penalize wrong answers:"/>
+            <CheckBox Grid.Row="2" Grid.Column="1" VerticalOptions="Center" IsChecked="{Binding ShouldPenalize}"/>
+        </Grid>
+        <Button Text="Save Course" HorizontalOptions="End" Command="{Binding SaveTestCommand}"/>
+        <Border StrokeThickness="3"/>
+        <Grid  ColumnDefinitions="Auto,*" ColumnSpacing="30" x:Name="toolbar">
+                <Label Grid.Column="0" VerticalOptions="Center" FontSize="16" Text="Questions"/>
+                <HorizontalStackLayout HorizontalOptions="End" VerticalOptions="Center" Grid.Column="1" Spacing="20">
+                    <Button Text="Refresh List" Command="{Binding RefreshCommand}"/>
+                    <Button Text="Add" x:Uid="AddQuestion" IsEnabled="{Binding IsSaved}" IsVisible="{Binding IsSaved}" Command="{Binding AddQuestionCommand}"/>
+                    <Button Text="Add" x:Uid="AddQuestion" 
+                        TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" 
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                        IsVisible="{Binding IsNotSaved}" IsEnabled="{Binding IsSaved}" Command="{Binding AddQuestionCommand}"/>
+                    <Button Text="Edit" x:Uid="EditQuestion" IsEnabled="{Binding IsSelected}" IsVisible="{Binding IsSelected}" Command="{Binding EditQuestionCommand}"/>
+                    <Button Text="Edit" x:Uid="EditQuestion"
+                            TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" 
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                            IsVisible="{Binding IsNotSelected}" IsEnabled="{Binding IsSelected}" Command="{Binding EditQuestionCommand}"/>
+                    <Button Text="Remove" x:Uid="RemoveQuestion" IsEnabled="{Binding IsSelected}" IsVisible="{Binding IsSelected}" Command="{Binding RemoveQuestionCommand}"/>
+                    <Button Text="Remove" x:Uid="RemoveQuestion"
+                            TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" 
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                            IsVisible="{Binding IsNotSelected}" IsEnabled="{Binding IsSelected}" Command="{Binding RemoveQuestionCommand}"/>
+                </HorizontalStackLayout>
+            </Grid>
+        <Border StrokeThickness="3"/>
+        <Border Padding="10">
+            <RefreshView>
+                <CollectionView ItemsSource="{Binding Questions}" SelectedItem="{Binding SelectedItem}" SelectionMode="Single" HeightRequest="300">
+                    <CollectionView.EmptyView HorizontalOptions="Center" VerticalOptions="Center">
+                        <StackLayout Padding="120">
+                            <Label Text="Nothing to display here, click Add to add a new question" HorizontalOptions="Center" FontSize="20" TextColor="LightGray"/>
+                        </StackLayout>
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="model:Question">
+                            <Frame Padding="10" Margin="5">
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                                    <Label Grid.Column="0" Text="{Binding Content}"/>
+                                    <HorizontalStackLayout Grid.Column="1" Spacing="10">
+                                        <Label Text="Type: "/>
+                                        <Label Text="{Binding Type}"/>
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout Grid.Column="2" Spacing="10">
+                                        <Label Text="Punctation: "/>
+                                        <Label Text="{Binding Punctation}"/>
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </RefreshView>
+        </Border>
+    </VerticalStackLayout>
+</ContentPage>

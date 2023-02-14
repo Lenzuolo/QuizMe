@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:QuizMe.ViewModel"
+             xmlns:model="clr-namespace:QuizMe.Model"
+             x:Class="QuizMe.View.CreateQuestionPanel"
+             x:DataType="viewmodel:CreateQuestionVM"
+             Title="{Binding Title}">
+    <VerticalStackLayout Padding="60,10" Spacing="10" WidthRequest="800">
+        <Grid WidthRequest="700" HeightRequest="200" ColumnDefinitions="Auto,*" Padding="10" ColumnSpacing="10" RowDefinitions="*,Auto,Auto" x:Name="Form">
+            <Label Grid.Row="0" Grid.Column="0" VerticalOptions="Start" Text="Question:"/>
+            <Editor Grid.Row="0" Grid.Column="1" MinimumHeightRequest="100" VerticalOptions="Start" BackgroundColor="{StaticResource Yellow300Accent}" AutoSize="TextChanges" Placeholder="Question" Text="{Binding Description}"/>
+            <Label Grid.Row="1" Grid.Column="0" VerticalOptions="Center" Text="Type:"/>
+            <HorizontalStackLayout
+                                   Grid.Row="1" 
+                                   Spacing="0" 
+                                   Grid.Column="1" 
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="StartAndExpand"
+                                   RadioButtonGroup.GroupName="Type"
+                                   RadioButtonGroup.SelectedValue="{Binding Type, Mode=TwoWay}">
+                <RadioButton GroupName="Type" Content="Single" Value="S" HorizontalOptions="Start"/>
+                <RadioButton GroupName="Type" Content="Multiple" Value="M" HorizontalOptions="Start"/>
+                <RadioButton GroupName="Type" Content="True/False" Value="TF" HorizontalOptions="Start"/>
+                <RadioButton GroupName="Type" Content="Open" Value="O" HorizontalOptions="Start"/>
+            </HorizontalStackLayout>
+            <Label Grid.Row="2" Margin="0" Grid.Column="0" VerticalOptions="Center" Text="Punctation:"/>
+            <HorizontalStackLayout Grid.Row="2" Grid.Column="1"
+                                   RadioButtonGroup.GroupName="Punctation"
+                                   RadioButtonGroup.SelectedValue="{Binding Punctation}"
+                                   VerticalOptions="Center" 
+                                   HorizontalOptions="StartAndExpand">
+                <RadioButton Content="Binary(1/0)" Value="B" HorizontalOptions="Start"/>
+                <RadioButton Content="Complex(Based on question type - 1/0.5/0)" IsEnabled="{Binding StatesDef.IsSelection}" Value="C" HorizontalOptions="Start"/>
+            </HorizontalStackLayout>
+        </Grid>
+        <VerticalStackLayout Spacing="20">
+            <Label FontSize="20" FontAttributes="Bold" Text="Answers"/>
+            <Border Padding="10" IsVisible="{Binding StatesDef.IsSelection}">
+                <CollectionView IsVisible="{Binding StatesDef.IsSelection}" SelectionMode="None" ItemsSource="{Binding Answers}" HeightRequest="280">
+                    <CollectionView.EmptyView HorizontalOptions="Center" VerticalOptions="Center">
+                        <StackLayout Padding="120">
+                            <Label Text="Nothing to display here, click Add to add a new question" HorizontalOptions="Center" FontSize="20" TextColor="LightGray"/>
+                        </StackLayout>
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="model:Answer">
+                            <Frame Padding="10" Margin="5" HeightRequest="60">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                    <CheckBox Grid.Column="0" IsChecked="{Binding IsCorrect}"/>
+                                    <Entry Placeholder="Answer" Text="{Binding Content}" BackgroundColor="{StaticResource Yellow300Accent}" Grid.Column="1"/>
+                                    <Button Grid.Column="2" Text="Delete" BackgroundColor="Transparent" TextColor="Red" BorderColor="Transparent" 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:CreateQuestionVM}}, Path=RemoveAnswerCommand}" 
+                                            CommandParameter="{Binding .}"/>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Border>
+            <Border Padding="10" IsVisible="{Binding StatesDef.IsOpen}">
+                <CollectionView IsVisible="{Binding StatesDef.IsOpen}" ItemsSource="{Binding Answers}" HeightRequest="200">
+                    <CollectionView.EmptyView HorizontalOptions="Center" VerticalOptions="Center">
+                        <StackLayout Padding="120">
+                            <Label Text="Nothing to display here, click Add to add a new question" HorizontalOptions="Center" FontSize="20" TextColor="LightGray"/>
+                        </StackLayout>
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="model:Answer">
+                            <Grid HeightRequest="200">
+                                <Editor BackgroundColor="{StaticResource Yellow300Accent}" AutoSize="TextChanges" Text="{Binding Content}" Placeholder="Answer"/>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Border>
+            <Button Text="Add" IsVisible="{Binding StatesDef.IsSelection}" HorizontalOptions="Center" Command="{Binding AddAnswerCommand}"/>
+        </VerticalStackLayout>
+        <Button HorizontalOptions="End" Text="Save Question" Command="{Binding SaveQuestionCommand}"/>
+    </VerticalStackLayout>
+</ContentPage>

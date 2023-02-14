@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:QuizMe.ViewModel"
+             xmlns:wrapper="clr-namespace:QuizMe.Model.Wrapper"
+             x:Class="QuizMe.View.TestParticipationView"
+             x:DataType="viewmodel:TestParticipationVM"
+             Title="{Binding Title}">
+    <VerticalStackLayout HeightRequest="800" Padding="100">
+        <VerticalStackLayout Spacing="50" IsVisible="{Binding IsNotFinished}">
+            <Border Padding="20" MinimumHeightRequest="300" MaximumHeightRequest="400">
+                <Grid RowDefinitions="Auto,*,Auto" RowSpacing="30">
+                    <Label Grid.Row="0" Text="{Binding CurrentQuestion.Title}"/>
+                    <VerticalStackLayout Grid.Row="1" IsVisible="{Binding IsSingle}">
+                        <CollectionView ItemsSource="{Binding Answers}" SelectionMode="None" RadioButtonGroup.GroupName="SingleQuestion" RadioButtonGroup.SelectedValue="{Binding SelectedSingleAnswerIndex, Mode=TwoWay}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="wrapper:TestAnswerWrapper">
+                                    <RadioButton GroupName="SingleQuestion" IsChecked="{Binding IsTrue}" Value="{Binding IndexLetter}" Content="{Binding Content}" Margin="5"/>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                    <CollectionView Grid.Row="1" IsVisible="{Binding IsMulti}" ItemsSource="{Binding Answers}" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="wrapper:TestAnswerWrapper">
+                                <Grid ColumnSpacing="10" ColumnDefinitions="Auto,*" HeightRequest="50">
+                                    <CheckBox Grid.Column="0" IsChecked="{Binding IsTrue}" VerticalOptions="Center"/>
+                                    <Label Text="{Binding Content}" VerticalOptions="Center" Grid.Column="1"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <VerticalStackLayout Spacing="10" Grid.Row="1" IsVisible="{Binding IsTrueFalse}">
+                        <HorizontalStackLayout Margin="10,0" Spacing="35" HorizontalOptions="Start">
+                            <Label Text="T" HorizontalOptions="Start"/>
+                            <Label Text="F" HorizontalOptions="Start"/>
+                        </HorizontalStackLayout>
+                        <CollectionView ItemsSource="{Binding Answers}" SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="wrapper:TestAnswerWrapper">
+                                    <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="10" HeightRequest="50">
+                                        <CheckBox Grid.Column="0" VerticalOptions="Center" IsChecked="{Binding IsTrue}"/>
+                                        <CheckBox Grid.Column="1" VerticalOptions="Center" IsChecked="{Binding IsFalse}"/>
+                                        <Label Grid.Column="2" VerticalOptions="Center" Text="{Binding Content}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                    <CollectionView Grid.Row="1" IsVisible="{Binding IsOpen}" ItemsSource="{Binding Answers}" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="wrapper:TestAnswerWrapper">
+                                <Grid HeightRequest="300">
+                                    <Editor AutoSize="TextChanges" Text="{Binding Content}" Placeholder="Answer"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Button Text="{Binding NextButtonText}" HorizontalOptions="End" Grid.Row="2" Command="{Binding NextCommand}"></Button>
+                </Grid>
+            </Border>
+            <Border Padding="20" IsVisible="{Binding IsLearning}">
+                <VerticalStackLayout IsVisible="{Binding ShowExplanation}">
+                    <CollectionView ItemsSource="{Binding Answers}" IsVisible="{Binding ShowAnswers}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="wrapper:TestAnswerWrapper">
+                                <Grid ColumnDefinitions="*,*,Auto">
+                                    <Label Grid.Column="0" Text="{Binding Content}"/>
+                                    <HorizontalStackLayout Grid.Column="1" Spacing="10">
+                                        <Label Text="Correct answer:"/>
+                                        <Label Text="True" IsVisible="{Binding IsCorrect}"/>
+                                        <Label Text="False" IsVisible="{Binding IsIncorrect}"/>
+                                    </HorizontalStackLayout>
+                                    <Label Grid.Column="2" Text="✔" IsVisible="{Binding AnsweredCorrectly}"/>
+                                    <Label Grid.Column="2" Text="❌" IsVisible="{Binding AnsweredIncorrectly}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Label Text="{Binding OpenAnswerContent}" VerticalOptions="Center" IsVisible="{Binding ShowOpenAnswer}"/>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+        <VerticalStackLayout IsVisible="{Binding IsFinished}" Spacing="10" HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand">
+            <Label FontSize="20" FontAttributes="Bold" Text="Summary" HorizontalOptions="Center" VerticalOptions="Center"/>
+            <Label Text="{Binding ScoreLabel}" HorizontalOptions="Center" VerticalOptions="Center"/>
+            <Label Text="{Binding MaxScore}" HorizontalOptions="Center" VerticalOptions="Center"/>
+            <Border Padding="20">
+                <RefreshView Command="{Binding RefreshCommand}">
+                    <CollectionView ItemsSource="{Binding Questions}" SelectionMode="None" HeightRequest="400">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="wrapper:QuestionWrapper">
+                                <Frame Padding="10" Margin="5">
+                                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10" HeightRequest="40">
+                                        <Label Grid.Column="0" Text="{Binding Title}" VerticalOptions="Center"/>
+                                        <HorizontalStackLayout Spacing="10" Grid.Column="1" VerticalOptions="Center">
+                                            <Label Text="Score: "/>
+                                            <Label Text="{Binding Score}"/>
+                                        </HorizontalStackLayout>
+                                        <Label Grid.Column="2" VerticalOptions="Center" IsVisible="{Binding IsCorrect}" Text="✔"/>
+                                        <Label Grid.Column="2" VerticalOptions="Center" IsVisible="{Binding IsPartial}" Text="🔸"/>
+                                        <Label Grid.Column="2" VerticalOptions="Center" IsVisible="{Binding IsWrong}" Text="❌"/>
+                                        <HorizontalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="10" IsVisible="{Binding ToVerify}">
+                                            <Label VerticalOptions="Center"  Text="❔"/>
+                                            <Button VerticalOptions="Center" Text="Verify" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:TestParticipationVM}}, Path=ShowOpenQuestionToVerifyCommand}" CommandParameter="{Binding .}"/>
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </RefreshView>
+            </Border>
+            <Button HorizontalOptions="End" Command="{Binding SaveButtonCommand}" IsEnabled="True" IsVisible="{Binding EnableFinishButton}" Text="Finish"/>
+            <Button HorizontalOptions="End" IsVisible="{Binding DisableFinishButton}"
+                    TextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" 
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                    IsEnabled="False"
+                    Text="Finish"/>
+        </VerticalStackLayout>
+    </VerticalStackLayout>
+</ContentPage>
